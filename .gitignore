@@ -1,0 +1,33 @@
+# Virtual environment
+venv/
+env/
+
+# Python and Django specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Django specific
+*.log
+*.pot
+*.sqlite3
+db.sqlite3
+media/
+
+# Environment variables
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.sublime-workspace
+
+# Other
+build/
+dist/

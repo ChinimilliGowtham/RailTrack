@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c8e6c9 100%);
+        min-height: 100vh;
+        transition: background 1s ease;
+        position: relative;
+    }
+
+    .welcome-title {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 2rem;
+        opacity: 0;
+        animation: fadeIn 1s forwards 0.2s;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .form-section {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .interactive-input:focus {
+        outline: none;
+        border-color: #4CAF50;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        transition: all 0.3s ease;
+    }
+
+    #success-message {
+        transform: translateY(-20px);
+        opacity: 0;
+        transition: all 0.5s;
+    }
+</style>
+<h1 class="welcome-title">Railway Time Tracking - User Access</h1>
+<div class="form-section active">
+    <h3 style="color: #2c3e50;">User Login</h3>
+    <form method="post" id="user-login-form">
+        {% csrf_token %}
+        <input type="hidden" name="form_id" value="user-form">
+        <div class="mb-3">
+            <input type="text" class="form-control interactive-input" name="username" placeholder="Enter Username/Email"
+                required onfocus="this.placeholder=''" onblur="this.placeholder='Enter Username/Email'">
+        </div>
+        <div class="mb-3">
+            <input type="password" class="form-control interactive-input" name="password" placeholder="Enter Password"
+                required onfocus="this.placeholder=''" onblur="this.placeholder='Enter Password'">
+        </div>
+        <button type="submit" class="btn btn-custom-user"
+            style="background-color: #4CAF50; border-color: #4CAF50; width: 100%; padding: 0.75rem; font-size: 1.1rem;">Login
+            & Track</button>
+    </form>
+    <p class="mt-2" style="color: #7f8c8d; text-align: center;">Don't have an account? <a
+            href="{% url 'register_user' %}" onclick="navigateToRegister('user-form')"
+            style="color: #4CAF50;">Register</a></p>
+</div>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" id="success-message">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+<script>
+    window.onload = function () {
+        const title = document.querySelector('.welcome-title');
+        title.style.opacity = '0';
+        setTimeout(() => {
+            title.style.transition = 'opacity 1s';
+            title.style.opacity = '1';
+        }, 100);
+    };
+
+    function navigateToRegister(formId) {
+        const form = document.getElementById(formId);
+        form.style.transition = 'opacity 0.5s, transform 0.5s';
+        form.style.opacity = '0';
+        form.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            window.location.href = this.getAttribute('href');
+        }, 500);
+        return false;
+    }
+
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.addEventListener('mouseover', () => {
+            button.style.transform = 'scale(1.05)';
+            button.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.2)';
+        });
+        button.addEventListener('mouseout', () => {
+            button.style.transform = 'scale(1)';
+            button.style.boxShadow = 'none';
+        });
+    });
+
+    const inputs = document.querySelectorAll('.interactive-input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            input.style.borderColor = '#4CAF50';
+            input.style.boxShadow = '0 0 10px rgba(76, 175, 80, 0.5)';
+        });
+        input.addEventListener('blur', () => {
+            input.style.borderColor = '';
+            input.style.boxShadow = '';
+        });
+    });
+
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = data.redirect;
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const successMessage = document.getElementById('success-message');
+    if (successMessage) {
+        successMessage.style.transition = 'all 0.5s';
+        successMessage.style.transform = 'translateY(-20px)';
+        successMessage.style.opacity = '0';
+        setTimeout(() => {
+            successMessage.style.transform = 'translateY(0)';
+            successMessage.style.opacity = '1';
+        }, 100);
+        setTimeout(() => {
+            successMessage.style.opacity = '0';
+            setTimeout(() => successMessage.remove(), 500);
+        }, 3000);
+    }
+</script>
+{% endblock %}

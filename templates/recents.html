@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>RailTrack Recents</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f7e0 0%, #c8e6c9 100%);
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ecf0f1;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #1e90ff 0%, #4CAF50 100%);
+            padding: 1.2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar .brand {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .navbar .nav-links {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .navbar .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar .nav-links a:hover {
+            color: #f0f0f0;
+        }
+
+        .auth-btn {
+            background-color: #ffffff;
+            color: #1e90ff;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            background-color: #f0f0f0;
+            color: #4CAF50;
+        }
+
+        .navbar-right {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .dark-mode-switch {
+            margin-right: 15px;
+        }
+
+        .dark-mode-switch label {
+            margin-right: 10px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #4CAF50;
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px #4CAF50;
+        }
+
+        input:checked+.slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        .content {
+            padding-top: 150px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #1e90ff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .recent-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .recent-table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            border: 1px solid #4CAF50;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .recent-table th,
+        .recent-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+            color: inherit;
+        }
+
+        .recent-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .recent-table.dark-mode {
+            background-color: #2c3e50;
+            border-color: #45a049;
+        }
+
+        .recent-table th.dark-mode,
+        .recent-table td.dark-mode {
+            border-color: #45a049;
+            color: #ecf0f1;
+        }
+
+        .no-data {
+            color: #888;
+            font-style: italic;
+        }
+
+        .no-data.dark-mode {
+            color: #bdc3c7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="brand">RailTrack</div>
+        <div class="nav-links">
+            <a href="{% url 'dashboard' %}">Home</a>
+            <a href="{% url 'recents' %}">Recents</a>
+            <a href="{% url 'trains_at_station' %}">Trains at Station</a>
+            <a href="{% url 'crowd_info' %}">Crowd Info</a>
+            <a href="{% url 'coach_layout' %}">Coach Layout</a>
+        </div>
+        <div class="navbar-right">
+            <div class="dark-mode-switch">
+                <label for="darkModeToggle">Dark Mode</label>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="auth-btn">Sign Out</button>
+            </form>
+        </div>
+    </div>
+    <div class="content">
+        <h1>Recent Trains</h1>
+        <div class="recent-section">
+            {% if recent_trains %}
+            <table class="recent-table">
+                <tr>
+                    <th>Train Number</th>
+                    <th>Station Name</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                </tr>
+                {% for train in recent_trains %}
+                <tr>
+                    <td>{{ train.number }}</td>
+                    <td>{{ train.current_station_name }}</td>
+                    <td>{{ train.status }}</td>
+                    <td>{{ train.last_updated }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p class="no-data">No recent train data available.</p>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const tables = document.querySelectorAll('.recent-table');
+            tables.forEach(table => table.classList.toggle('dark-mode'));
+            const ths = document.querySelectorAll('.recent-table th');
+            ths.forEach(th => th.classList.toggle('dark-mode'));
+            const tds = document.querySelectorAll('.recent-table td');
+            tds.forEach(td => td.classList.toggle('dark-mode'));
+            const noData = document.querySelectorAll('.no-data');
+            noData.forEach(nd => nd.classList.toggle('dark-mode'));
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        window.onload = function () {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.getElementById('darkModeToggle').checked = true;
+                toggleDarkMode();
+            }
+        };
+    </script>
+</body>
+
+</html>

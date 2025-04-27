@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c8e6c9 100%);
+        min-height: 100vh;
+        transition: background 1s ease;
+    }
+
+    .form-section {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .interactive-input:focus {
+        outline: none;
+        border-color: #4CAF50;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        transition: all 0.3s ease;
+    }
+</style>
+<h1 class="welcome-title" style="color: #2c3e50; text-align: center; margin-bottom: 2rem;">Register for Railway Tracking
+</h1>
+<div class="form-section active">
+    <h3 style="color: #2c3e50;">User Registration</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <input type="text" class="form-control interactive-input" name="full_name" placeholder="Full Name" required
+                onfocus="this.placeholder=''" onblur="this.placeholder='Full Name'">
+        </div>
+        <div class="mb-3">
+            <input type="email" class="form-control interactive-input" name="email" placeholder="Email" required
+                onfocus="this.placeholder=''" onblur="this.placeholder='Email'">
+        </div>
+        <div class="mb-3">
+            <input type="password" class="form-control interactive-input" name="password" placeholder="Password"
+                required onfocus="this.placeholder=''" onblur="this.placeholder='Password'">
+        </div>
+        <div class="mb-3">
+            <input type="password" class="form-control interactive-input" name="confirm_password"
+                placeholder="Confirm Password" required onfocus="this.placeholder=''"
+                onblur="this.placeholder='Confirm Password'">
+        </div>
+        <div class="mb-3">
+            <input type="text" class="form-control interactive-input" name="phone" placeholder="Phone Number" required
+                onfocus="this.placeholder=''" onblur="this.placeholder='Phone Number'">
+        </div>
+        <button type="submit" class="btn btn-custom-user"
+            style="background-color: #4CAF50; border-color: #4CAF50; width: 100%; padding: 0.75rem; font-size: 1.1rem;">Register</button>
+    </form>
+    <p class="mt-2" style="color: #7f8c8d; text-align: center;">Already have an account? <a href="{% url 'welcome' %}"
+            style="color: #4CAF50;">Login</a></p>
+</div>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"
+    style="max-width: 400px; margin: 1rem auto;">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+<script>
+    const inputs = document.querySelectorAll('.interactive-input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            input.style.borderColor = '#4CAF50';
+            input.style.boxShadow = '0 0 10px rgba(76, 175, 80, 0.5)';
+        });
+        input.addEventListener('blur', () => {
+            input.style.borderColor = '';
+            input.style.boxShadow = '';
+        });
+    });
+
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.addEventListener('mouseover', () => {
+            button.style.transform = 'scale(1.05)';
+            button.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.2)';
+        });
+        button.addEventListener('mouseout', () => {
+            button.style.transform = 'scale(1)';
+            button.style.boxShadow = 'none';
+        });
+    });
+</script>
+{% endblock %}

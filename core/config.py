@@ -1,2 +1,3 @@
-crowd_api = "322c0b0a4b0108ac5b25cabdea6d9d96"
-live_track_api = "3f1739a633msh83b5762b37e150ap15e49ejsn90516ba729d5"
+from decouple import config
+crowd_api = config('CROWD_API')
+live_track_api = config('LIVE_TRACK_API')
